@@ -121,7 +121,6 @@ bool ESPStepperMotorServer_Logger::isDebugEnabled()
     return ESPStepperMotorServer_Logger::_isDebugLevelSet;
 }
 
-#ifndef ESPStepperMotorServer_COMPILE_NO_DEBUG
 void ESPStepperMotorServer_Logger::logDebug(const char *msg, boolean newLine, boolean ommitLogLevel)
 {
     if (ESPStepperMotorServer_Logger::_isDebugLevelSet)
@@ -148,7 +147,6 @@ void ESPStepperMotorServer_Logger::logDebug(String msg, boolean newLine, boolean
         ESPStepperMotorServer_Logger::logDebug(msg.c_str(), newLine, ommitLogLevel);
     }
 }
-#endif
 
 void ESPStepperMotorServer_Logger::logInfo(const char *msg, boolean newLine, boolean ommitLogLevel)
 {
