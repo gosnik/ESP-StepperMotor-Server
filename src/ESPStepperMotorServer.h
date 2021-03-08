@@ -113,6 +113,7 @@ public:
   void setHttpPort(int portNumber);
   void onWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
   void sendSocketMessageToAllClients(const char *message, size_t len);
+  AsyncWebServer* getWebServer() {return httpServer;}
 #endif
 
   void setAccessPointName(const char *accessPointSSID);
@@ -169,7 +170,6 @@ private:
   void registerWebInterfaceUrls();
   bool checkIfGuiExistsInSpiffs();
   bool downloadFileToSpiffs(const char *url, const char *targetPath);
-  AsyncWebServer* getWebServer() {return httpServer;}
 #endif
 
   void startSPIFFS();
