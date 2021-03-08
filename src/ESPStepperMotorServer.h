@@ -169,6 +169,7 @@ private:
   void registerWebInterfaceUrls();
   bool checkIfGuiExistsInSpiffs();
   bool downloadFileToSpiffs(const char *url, const char *targetPath);
+  AsyncWebServer* getWebServer() {return httpServer;}
 #endif
 
   void startSPIFFS();
