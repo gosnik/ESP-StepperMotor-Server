@@ -68,6 +68,8 @@
 #include <ESPStepperMotorServer_RestAPI.h>
 #endif
 
+#include <functional>
+
 #define ESPServerWifiModeDisabled 0
 #define ESPServerWifiModeAccessPoint 1
 #define ESPServerWifiModeClient 2
@@ -97,6 +99,9 @@ class ESPStepperMotorServer_MacroAction;
 class ESPStepperMotorServer_WebInterface;
 class ESPStepperMotorServer_RestAPI;
 #endif
+
+typedef std::function<void(AsyncWebServer*)> ESPStepperMotorServer_RegisterRestHandler;
+
 //
 // the ESPStepperMotorServer class
 // TODO: remove all wifi stuff if not needed using: #if defined(ESPServerWifiModeClient) || defined(ESPServerWifiModeAccessPoint)
@@ -113,7 +118,7 @@ public:
   void setHttpPort(int portNumber);
   void onWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len);
   void sendSocketMessageToAllClients(const char *message, size_t len);
-  AsyncWebServer* getWebServer() {return httpServer;}
+  void registerRestHook(ESPStepperMotorServer_RegisterRestHandler fn);
 #endif
 
   void setAccessPointName(const char *accessPointSSID);
@@ -207,6 +212,7 @@ private:
   boolean isServerStarted = false;
   boolean isSPIFFSactive = false;
   boolean _isRebootScheduled = false;
+  ESPStepperMotorServer_RegisterRestHandler restHook = nullptr;
 
   ESPStepperMotorServer_Configuration *serverConfiguration;
 

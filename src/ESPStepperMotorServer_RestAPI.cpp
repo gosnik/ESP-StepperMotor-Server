@@ -222,6 +222,10 @@ void ESPStepperMotorServer_RestAPI::registerRestEndpoints(AsyncWebServer *httpSe
             {
                 String unit = request->getParam("unit", true)->value();
                 float position = request->getParam("value", true)->value().toFloat();
+                if (position < 0)
+                {
+                    position = 0;
+                }
                 if (unit == "mm")
                 {
                     stepper->getFlexyStepper()->setTargetPositionInMillimeters(position);

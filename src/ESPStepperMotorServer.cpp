@@ -253,6 +253,12 @@ void ESPStepperMotorServer::setHttpPort(int portNumber)
 {
     this->serverConfiguration->serverPort = portNumber;
 }
+
+void ESPStepperMotorServer::registerRestHook(ESPStepperMotorServer_RegisterRestHandler fn)
+{
+    restHook = fn;
+}
+
 #endif
 
 ESPStepperMotorServer_Configuration *ESPStepperMotorServer::getCurrentServerConfiguration()
@@ -701,6 +707,10 @@ void ESPStepperMotorServer::startWebserver()
         if (isRestApiEnabled)
         {
             this->restApiHandler->registerRestEndpoints(this->httpServer);
+            if (nullptr != restHook)
+            {
+                restHook(this->httpServer);
+            }
         }
         // SETUP CORS responses/headers
         DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
