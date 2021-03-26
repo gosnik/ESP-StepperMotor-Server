@@ -23,8 +23,12 @@
         },
         {
             "name": "ESP-FlexyStepper",
-            "version": "1.4.1",
-            "platforms": "espressif32"
+            "platforms": "espressif32",
+            "repository":
+            {
+                "type": "git",
+                "url": "https://github.com/gosnik/ESP-FlexyStepper.git"
+            }
         },
         {
             "name": "ArduinoJSON",
