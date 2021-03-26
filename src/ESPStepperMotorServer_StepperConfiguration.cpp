@@ -101,6 +101,16 @@ byte ESPStepperMotorServer_StepperConfiguration::getId()
     return this->_stepperIndex;
 }
 
+bool ESPStepperMotorServer_StepperConfiguration::getEnabled()
+{
+    return _enabled;
+}
+
+void ESPStepperMotorServer_StepperConfiguration::setEnabled(bool bEnabled)
+{
+    _enabled = bEnabled;
+}
+
 String ESPStepperMotorServer_StepperConfiguration::getDisplayName()
 {
     return this->_displayName;

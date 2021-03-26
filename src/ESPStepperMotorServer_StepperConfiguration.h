@@ -72,6 +72,10 @@ public:
    */
   byte getId();
 
+  bool getEnabled();
+
+  void setEnabled(bool);
+
   /**
    * Set the display name of the stepper motor to be shown in the user intefaces
    */
@@ -188,6 +192,7 @@ private:
   byte _directionIoPin = ESPServerStepperUnsetIoPinNumber;
   byte _brakeIoPin = ESPServerStepperUnsetIoPinNumber;
   byte _brakePinActiveState = 1; // 1 = active high, 2 = active low
+  bool _enabled = false;
   long _brakeEngageDelayMs = 0;
   long _brakeReleaseDelayMs = -1;
   unsigned int _stepsPerRev = 200;

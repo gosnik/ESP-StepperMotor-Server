@@ -119,6 +119,13 @@ void ESPStepperMotorServer_RestAPI::registerRestEndpoints(AsyncWebServer *httpSe
                 request->send(404, "application/json", "{\"error\": \"No stepper configuration found for given id\"}");
                 return;
             }
+
+            if (!stepper->getEnabled())
+            {
+                request->send(404, "application/json", "{\"error\": \"Not enabled\"}");
+                return;
+            }
+
             if (request->hasParam("speed"))
             {
                 float speed = request->getParam("speed")->value().toFloat();
@@ -188,6 +195,12 @@ void ESPStepperMotorServer_RestAPI::registerRestEndpoints(AsyncWebServer *httpSe
             if (stepper == NULL)
             {
                 request->send(404, "application/json", "{\"error\": \"No stepper configuration found for given id\"}");
+                return;
+            }
+
+            if (!stepper->getEnabled())
+            {
+                request->send(404, "application/json", "{\"error\": \"Not enabled\"}");
                 return;
             }
 
@@ -618,6 +631,7 @@ void ESPStepperMotorServer_RestAPI::populateStepperDetailsToJsonObject(JsonObjec
         stepperDetails["name"] = stepper->getDisplayName();
         stepperDetails["stepPin"] = stepper->getStepIoPin();
         stepperDetails["dirPin"] = stepper->getDirectionIoPin();
+        stepperDetails["enabled"] = stepper->getEnabled();
 
         stepperDetails["brakePin"] = stepper->getBrakeIoPin();
         stepperDetails["brakePinActiveState"] = stepper->getBrakePinActiveState();
