@@ -18,8 +18,12 @@
     ],
     "dependencies": [{
             "name": "ESP Async WebServer",
-            "version": "1.2.3",
-            "platforms": "espressif32"
+            "platforms": "espressif32",
+            "repository":
+            {
+                "type": "git",
+                "url": "https://github.com/me-no-dev/ESPAsyncWebServer.git"
+            }
         },
         {
             "name": "ESP-FlexyStepper",

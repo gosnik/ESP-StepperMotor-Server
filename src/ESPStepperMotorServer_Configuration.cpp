@@ -289,6 +289,7 @@ bool ESPStepperMotorServer_Configuration::loadConfiguationFromSpiffs(String file
                 ESPStepperMotorServer_StepperConfiguration *stepperConfig = new ESPStepperMotorServer_StepperConfiguration(
                     (stepperConfigEntry["stepPin"] | 255),
                     (stepperConfigEntry["directionPin"] | 255),
+                    (stepperConfigEntry["enablePin"] | 255),
                     ((value) ? value : "undefined"),
                     (stepperConfigEntry["stepsPerRev"] | 200),
                     (stepperConfigEntry["stepsPerMM"] | 100),

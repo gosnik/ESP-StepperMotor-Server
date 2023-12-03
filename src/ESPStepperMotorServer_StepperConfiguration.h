@@ -57,8 +57,8 @@ class ESPStepperMotorServer_StepperConfiguration
 public:
   ESPStepperMotorServer_StepperConfiguration(const ESPStepperMotorServer_StepperConfiguration &espStepperConfiguration);
   ~ESPStepperMotorServer_StepperConfiguration();
-  ESPStepperMotorServer_StepperConfiguration(byte stepIoPin, byte directionIoPin);
-  ESPStepperMotorServer_StepperConfiguration(byte stepIoPin, byte directionIoPin, String displayName, unsigned int stepsPerRev, unsigned int stepsPerMM, unsigned int microsteppingDivisor, unsigned int rpmLimit);
+  ESPStepperMotorServer_StepperConfiguration(byte stepIoPin, byte directionIoPin, byte enablePin = 255);
+  ESPStepperMotorServer_StepperConfiguration(byte stepIoPin, byte directionIoPin, byte enablePin, String displayName, unsigned int stepsPerRev, unsigned int stepsPerMM, unsigned int microsteppingDivisor, unsigned int rpmLimit);
 
   ESP_FlexyStepper *getFlexyStepper();
 
@@ -190,6 +190,7 @@ private:
   byte _stepperIndex = 0;
   byte _stepIoPin = ESPServerStepperUnsetIoPinNumber;
   byte _directionIoPin = ESPServerStepperUnsetIoPinNumber;
+  byte _enableIoPin = ESPServerStepperUnsetIoPinNumber;
   byte _brakeIoPin = ESPServerStepperUnsetIoPinNumber;
   byte _brakePinActiveState = 1; // 1 = active high, 2 = active low
   bool _enabled = false;

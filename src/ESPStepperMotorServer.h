@@ -146,6 +146,7 @@ public:
   signed char updateSwitchStatusRegister();
   String getIpAddress();
   ESPStepperMotorServer_Configuration *getCurrentServerConfiguration();
+  ESPStepperMotorServer_CLI *getCli();
   void requestReboot(String rebootReason);
   bool isSPIFFSMounted();
 
@@ -154,6 +155,8 @@ public:
   void getServerStatusAsJsonString(String &statusString);
   byte getFirstAvailableConfigurationSlotForRotaryEncoder();
   bool isIoPinUsed(int);
+
+  void registerNewCommand(commandDetailsStructure commandDetails, CmdHandler cmdFunction);
 
   //
   // public member variables

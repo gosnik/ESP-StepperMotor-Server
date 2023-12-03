@@ -1457,4 +1457,14 @@ void ESPStepperMotorServer::setLogLevel(byte logLevel)
     ESPStepperMotorServer_Logger::setLogLevel(logLevel);
 }
 
+void ESPStepperMotorServer::registerNewCommand(commandDetailsStructure commandDetails, CmdHandler cmdFunction)
+{
+    cliHandler->registerNewCommand(commandDetails, cmdFunction);
+}
+
+ESPStepperMotorServer_CLI *ESPStepperMotorServer::getCli()
+{
+    return cliHandler;
+}
+
 // -------------------------------------- End --------------------------------------

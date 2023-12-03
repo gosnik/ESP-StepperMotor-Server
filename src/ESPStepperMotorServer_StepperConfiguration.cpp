@@ -38,6 +38,7 @@ ESPStepperMotorServer_StepperConfiguration::ESPStepperMotorServer_StepperConfigu
 
     this->_stepIoPin = espStepperConfiguration._stepIoPin;
     this->_directionIoPin = espStepperConfiguration._directionIoPin;
+    this->_enableIoPin = espStepperConfiguration._directionIoPin;
     this->_stepsPerMM = espStepperConfiguration._stepsPerMM;
     this->_stepsPerRev = espStepperConfiguration._stepsPerRev;
     this->_microsteppingDivisor = espStepperConfiguration._microsteppingDivisor;
@@ -55,24 +56,37 @@ ESPStepperMotorServer_StepperConfiguration::~ESPStepperMotorServer_StepperConfig
 //
 // constructor for the stepper wrapper class
 //
-ESPStepperMotorServer_StepperConfiguration::ESPStepperMotorServer_StepperConfiguration(byte stepIoPin, byte directionIoPin)
+ESPStepperMotorServer_StepperConfiguration::ESPStepperMotorServer_StepperConfiguration(byte stepIoPin, byte directionIoPin, byte enablePin)
 {
     this->_stepIoPin = stepIoPin;
     this->_directionIoPin = directionIoPin;
+    this->_enableIoPin = enablePin;
     this->_flexyStepper = new ESP_FlexyStepper();
     this->_flexyStepper->connectToPins(this->_stepIoPin, this->_directionIoPin);
+    if (this->_enableIoPin < 255)
+    {
+        pinMode(_enableIoPin, OUTPUT);
+        digitalWrite(_enableIoPin, HIGH);
+    }
 }
 
-ESPStepperMotorServer_StepperConfiguration::ESPStepperMotorServer_StepperConfiguration(byte stepIoPin, byte directionIoPin, String displayName, unsigned int stepsPerRev, unsigned int stepsPerMM, unsigned int microsteppingDivisor, unsigned int rpmLimit)
+ESPStepperMotorServer_StepperConfiguration::ESPStepperMotorServer_StepperConfiguration(byte stepIoPin, byte directionIoPin, byte enablePin, String displayName, unsigned int stepsPerRev, unsigned int stepsPerMM, unsigned int microsteppingDivisor, unsigned int rpmLimit)
 {
     this->_stepIoPin = stepIoPin;
     this->_directionIoPin = directionIoPin;
+    this->_enableIoPin = enablePin;
     this->_microsteppingDivisor = microsteppingDivisor;
     this->_displayName = displayName;
     this->_rpmLimit = rpmLimit;
 
     this->_flexyStepper = new ESP_FlexyStepper();
     this->_flexyStepper->connectToPins(this->_stepIoPin, this->_directionIoPin);
+
+    if (this->_enableIoPin < 255)
+    {
+        pinMode(_enableIoPin, OUTPUT);
+        digitalWrite(_enableIoPin, HIGH);
+    }
 
     //we store the value in flexistepper and locally, since flexystepper does not provider getters
     this->_flexyStepper->setStepsPerMillimeter(stepsPerMM * this->_microsteppingDivisor);
@@ -109,12 +123,17 @@ bool ESPStepperMotorServer_StepperConfiguration::getEnabled()
 void ESPStepperMotorServer_StepperConfiguration::setEnabled(bool bEnabled)
 {
     _enabled = bEnabled;
+    if (this->_enableIoPin < 255)
+    {
+        digitalWrite(_enableIoPin, !_enabled);
+    }
 }
 
 String ESPStepperMotorServer_StepperConfiguration::getDisplayName()
 {
     return this->_displayName;
 }
+
 void ESPStepperMotorServer_StepperConfiguration::setDisplayName(String displayName)
 {
     if (displayName.length() > ESPSMS_Stepper_DisplayName_MaxLength)

@@ -33,8 +33,8 @@
 
 #define MAX_CLI_CMD_COUNTER 50
 
-#include <ESPStepperMotorServer.h>
 #include <ESPStepperMotorServer_Logger.h>
+#include <functional>
 
 //need this forward declaration here due to circular dependency (use in constructor/member variable)
 class ESPStepperMotorServer;
@@ -47,12 +47,18 @@ struct commandDetailsStructure
   bool hasParameters;
 };
 
+typedef std::function<void(char *, char *)> CmdHandler;
+
 class ESPStepperMotorServer_CLI
 {
 public:
   ESPStepperMotorServer_CLI(ESPStepperMotorServer *serverRef);
   ~ESPStepperMotorServer_CLI();
   static void processSerialInput(void *parameter);
+  void registerNewCommand(commandDetailsStructure commandDetails, CmdHandler cmdFunction);
+  void getUnitWithFallback(char *args, char *unit);
+  int getValidStepperIdFromArg(char *arg);
+  void getParameterValue(const char *args, const char *parameterNameToGetValueFor, char *result);
   void executeCommand(String cmd);
   void start();
   void stop();
@@ -82,16 +88,11 @@ private:
 #endif
   void cmdSetSSID(char *cmd, char *args);
   void cmdSetWifiPassword(char *cmd, char *args);
-  int getValidStepperIdFromArg(char *arg);
-  void getParameterValue(const char *args, const char *parameterNameToGetValueFor, char *result);
   void registerCommands();
-  void registerNewCommand(commandDetailsStructure commandDetails, void (ESPStepperMotorServer_CLI::*f)(char *, char *));
-  void getUnitWithFallback(char *args, char *unit);
 
   TaskHandle_t xHandle = NULL;
   ESPStepperMotorServer *serverRef;
-  void (ESPStepperMotorServer_CLI::*command_functions[MAX_CLI_CMD_COUNTER + 1])(char *, char *);
-  //const char *command_details[MAX_CLI_CMD_COUNTER +1 ][4];
+  CmdHandler command_functions[MAX_CLI_CMD_COUNTER + 1];
   commandDetailsStructure allRegisteredCommands[MAX_CLI_CMD_COUNTER + 1];
   unsigned int commandCounter = 0;
 

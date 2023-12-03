@@ -30,6 +30,7 @@
 // SOFTWARE.
 
 #include <ESPStepperMotorServer_CLI.h>
+#include <ESPStepperMotorServer.h>
 
 #define CR '\r'
 #define LF '\n'
@@ -84,11 +85,11 @@ void ESPStepperMotorServer_CLI::executeCommand(String cmd)
   char *pureCommand = strtok(cmdCharArray, _CMD_PARAM_SEPRATOR);
   char *arguments = strtok(NULL, "=");
 
-  for (int i = 0; i < this->commandCounter; i++)
+  for (int i = 0; i < commandCounter; i++)
   {
-    if (this->allRegisteredCommands[i].command.equals(pureCommand) || this->allRegisteredCommands[i].shortCut.equals(pureCommand))
+    if (allRegisteredCommands[i].command.equals(pureCommand) || allRegisteredCommands[i].shortCut.equals(pureCommand))
     {
-      (this->*command_functions[i])(pureCommand, arguments);
+      (command_functions[i])(pureCommand, arguments);
       return;
     }
   }
@@ -178,30 +179,30 @@ void ESPStepperMotorServer_CLI::registerCommands()
   this->registerNewCommand({String("setwifissid"), String("sws"), emptyHelp, true}, &ESPStepperMotorServer_CLI::cmdSetSSID);
   this->registerNewCommand({String("setwifipwd"), String("swp"), emptyHelp, true}, &ESPStepperMotorServer_CLI::cmdSetWifiPassword);
 #else
-  this->registerNewCommand({String("help"), String("h"), String("show a list of all available commands"), false}, &ESPStepperMotorServer_CLI::cmdHelp);
-  this->registerNewCommand({String("moveby"), String("mb"), String("move by an specified amount of units. requires the id of the stepper to move, the amount pf movement and also optional the unit for the movement (mm, steps, revs). If no unit is specified steps will be assumed as unit. E.g. mb=0&v=-100&u=mm to move the stepper with id 0 by -100 mm"), true}, &ESPStepperMotorServer_CLI::cmdMoveBy);
-  this->registerNewCommand({String("moveto"), String("mt"), String("move to an absolute position. requires the id of the stepper to move, the amount pf movement and also optional the unit for the movement (mm, steps, revs). If no unit is specified steps will be assumed as unit. E.g. mt=0&v:100&u:revs to move the stepper with id 0 to the absolute position at 100 revolutions"), true}, &ESPStepperMotorServer_CLI::cmdMoveTo);
-  this->registerNewCommand({String("config"), String("c"), String("print the current configuration to the console as JSON formatted string"), false}, &ESPStepperMotorServer_CLI::cmdPrintConfig);
-  this->registerNewCommand({String("emergencystop"), String("es"), String("trigger emergency stop for all connected steppers. This will clear all target positions and stop the motion controller module immediately. In order to proceed normal operation after this command has been issued, you need to call the revokeemergencystop [res] command"), false}, &ESPStepperMotorServer_CLI::cmdEmergencyStop);
-  this->registerNewCommand({String("revokeemergencystop"), String("res"), String("revoke a previously triggered emergency stop. This must be called before any motions can proceed after a call to the emergencystop command"), false}, &ESPStepperMotorServer_CLI::cmdRevokeEmergencyStop);
-  this->registerNewCommand({String("position"), String("p"), String("get the current position of a specific stepper or all steppers if no explicit index is given (e.g. by calling 'pos' or 'pos=&u:mm'). If no parameter for the unit is provided, will return the position in steps. Requires the ID of the stepper to get the position for as parameter and optional the unit using 'u:mm'/'u:steps'/'u:revs'. E.g.: p=0&u:steps to return the current position of stepper with id = 0 with unit 'steps'"), true}, &ESPStepperMotorServer_CLI::cmdGetPosition);
-  this->registerNewCommand({String("velocity"), String("v"), String("get the current velocity of a specific stepper or all steppers if no explicit index is given (e.g. by calling 'pos' or 'pos=&u:mm'). If no parameter for the unit is provided, will return the position in steps. Requires the ID of the stepper to get the velocity for as parameter and optional the unit using 'u:mm'/'u:steps'/'u:revs'. E.g.: v=0&u:mm to return the velocity in mm per second of stepper with id = 0"), true}, &ESPStepperMotorServer_CLI::cmdGetCurrentVelocity);
-  this->registerNewCommand({String("removeswitch"), String("rsw"), String("remove an existing switch configuration. E.g. rsw=0 to remove the switch with the ID 0"), true}, &ESPStepperMotorServer_CLI::cmdRemoveSwitch);
-  this->registerNewCommand({String("removestepper"), String("rs"), String("remove and existing stepper configuration. E.g. rs=0 to remove the stepper config with the ID 0"), true}, &ESPStepperMotorServer_CLI::cmdRemoveStepper);
-  this->registerNewCommand({String("removeencoder"), String("re"), String("remove an existing rotary encoder configuration. E.g. re=0 to remove the encoder with the ID 0"), true}, &ESPStepperMotorServer_CLI::cmdRemoveEncoder);
-  this->registerNewCommand({String("reboot"), String("r"), String("reboot the ESP (config changes that have not been saved will be lost)"), false}, &ESPStepperMotorServer_CLI::cmdReboot);
-  this->registerNewCommand({String("save"), String("s"), String("save the current configuration to the SPIFFS in config.json"), false}, &ESPStepperMotorServer_CLI::cmdSaveConfiguration);
-  this->registerNewCommand({String("stop"), String("st"), String("stop the stepper server (also stops the CLI!)"), false}, &ESPStepperMotorServer_CLI::cmdStopServer);
-  this->registerNewCommand({String("loglevel"), String("ll"), String("set or get the current log level for serial output. valid values to set are: 1 (Warning) - 4 (ALL). E.g. to set to log level DEBUG use ll=3 to get the current loglevel call without parameter"), true}, &ESPStepperMotorServer_CLI::cmdSetLogLevel);
-  this->registerNewCommand({String("serverstatus"), String("ss"), String("print status details of the server as JSON formated string"), false}, &ESPStepperMotorServer_CLI::cmdServerStatus);
-  this->registerNewCommand({String("switchstatus"), String("pss"), String("print the status of all input switches as JSON formated string"), false}, &ESPStepperMotorServer_CLI::cmdSwitchStatus);
-  this->registerNewCommand({String("setapname"), String("san"), String("set the name of the access point to be opened up by the esp (if in AP mode)"), true}, &ESPStepperMotorServer_CLI::cmdSetApName);
-  this->registerNewCommand({String("setappwd"), String("sap"), String("set the password for the access point to be opened by the esp"), true}, &ESPStepperMotorServer_CLI::cmdSetApPassword);
-  this->registerNewCommand({String("setwifissid"), String("sws"), String("set the SSID of the WiFi to connect to (if in client mode)"), true}, &ESPStepperMotorServer_CLI::cmdSetSSID);
-  this->registerNewCommand({String("setwifipwd"), String("swp"), String("set the password of the Wifi network to connect to"), true}, &ESPStepperMotorServer_CLI::cmdSetWifiPassword);
+  this->registerNewCommand({String("help"), String("he"), String("show a list of all available commands"), false}, std::bind(&ESPStepperMotorServer_CLI::cmdHelp, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("moveby"), String("mb"), String("move by an specified amount of units. requires the id of the stepper to move, the amount pf movement and also optional the unit for the movement (mm, steps, revs). If no unit is specified steps will be assumed as unit. E.g. mb=0&v=-100&u=mm to move the stepper with id 0 by -100 mm"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdMoveBy, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("moveto"), String("mt"), String("move to an absolute position. requires the id of the stepper to move, the amount pf movement and also optional the unit for the movement (mm, steps, revs). If no unit is specified steps will be assumed as unit. E.g. mt=0&v:100&u:revs to move the stepper with id 0 to the absolute position at 100 revolutions"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdMoveTo, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("config"), String("c"), String("print the current configuration to the console as JSON formatted string"), false}, std::bind(&ESPStepperMotorServer_CLI::cmdPrintConfig, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("emergencystop"), String("es"), String("trigger emergency stop for all connected steppers. This will clear all target positions and stop the motion controller module immediately. In order to proceed normal operation after this command has been issued, you need to call the revokeemergencystop [res] command"), false}, std::bind(&ESPStepperMotorServer_CLI::cmdEmergencyStop, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("revokeemergencystop"), String("res"), String("revoke a previously triggered emergency stop. This must be called before any motions can proceed after a call to the emergencystop command"), false}, std::bind(&ESPStepperMotorServer_CLI::cmdRevokeEmergencyStop, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("position"), String("p"), String("get the current position of a specific stepper or all steppers if no explicit index is given (e.g. by calling 'pos' or 'pos=&u:mm'). If no parameter for the unit is provided, will return the position in steps. Requires the ID of the stepper to get the position for as parameter and optional the unit using 'u:mm'/'u:steps'/'u:revs'. E.g.: p=0&u:steps to return the current position of stepper with id = 0 with unit 'steps'"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdGetPosition, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("velocity"), String("v"), String("get the current velocity of a specific stepper or all steppers if no explicit index is given (e.g. by calling 'pos' or 'pos=&u:mm'). If no parameter for the unit is provided, will return the position in steps. Requires the ID of the stepper to get the velocity for as parameter and optional the unit using 'u:mm'/'u:steps'/'u:revs'. E.g.: v=0&u:mm to return the velocity in mm per second of stepper with id = 0"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdGetCurrentVelocity, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("removeswitch"), String("rsw"), String("remove an existing switch configuration. E.g. rsw=0 to remove the switch with the ID 0"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdRemoveSwitch, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("removestepper"), String("rs"), String("remove and existing stepper configuration. E.g. rs=0 to remove the stepper config with the ID 0"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdRemoveStepper, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("removeencoder"), String("re"), String("remove an existing rotary encoder configuration. E.g. re=0 to remove the encoder with the ID 0"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdRemoveEncoder, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("reboot"), String("r"), String("reboot the ESP (config changes that have not been saved will be lost)"), false}, std::bind(&ESPStepperMotorServer_CLI::cmdReboot, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("save"), String("s"), String("save the current configuration to the SPIFFS in config.json"), false}, std::bind(&ESPStepperMotorServer_CLI::cmdSaveConfiguration, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("stop"), String("st"), String("stop the stepper server (also stops the CLI!)"), false}, std::bind(&ESPStepperMotorServer_CLI::cmdStopServer, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("loglevel"), String("ll"), String("set or get the current log level for serial output. valid values to set are: 1 (Warning) - 4 (ALL). E.g. to set to log level DEBUG use ll=3 to get the current loglevel call without parameter"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdSetLogLevel, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("serverstatus"), String("ss"), String("print status details of the server as JSON formated string"), false}, std::bind(&ESPStepperMotorServer_CLI::cmdServerStatus, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("switchstatus"), String("pss"), String("print the status of all input switches as JSON formated string"), false}, std::bind(&ESPStepperMotorServer_CLI::cmdSwitchStatus, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("setapname"), String("san"), String("set the name of the access point to be opened up by the esp (if in AP mode)"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdSetApName, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("setappwd"), String("sap"), String("set the password for the access point to be opened by the esp"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdSetApPassword, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("setwifissid"), String("sws"), String("set the SSID of the WiFi to connect to (if in client mode)"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdSetSSID, this, std::placeholders::_1, std::placeholders::_2));
+  this->registerNewCommand({String("setwifipwd"), String("swp"), String("set the password of the Wifi network to connect to"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdSetWifiPassword, this, std::placeholders::_1, std::placeholders::_2));
 
 #ifndef ESPStepperMotorServer_COMPILE_NO_WEB
-  this->registerNewCommand({String("sethttpport"), String("shp"), String("set the http port to listen for for the web interface"), true}, &ESPStepperMotorServer_CLI::cmdSetHttpPort);
+  this->registerNewCommand({String("sethttpport"), String("shp"), String("set the http port to listen for for the web interface"), true}, std::bind(&ESPStepperMotorServer_CLI::cmdSetHttpPort, this, std::placeholders::_1, std::placeholders::_2));
 #endif
 
 #endif
@@ -217,7 +218,7 @@ void ESPStepperMotorServer_CLI::registerCommands()
   // create set wifi mode function
 }
 
-void ESPStepperMotorServer_CLI::registerNewCommand(commandDetailsStructure commandDetails, void (ESPStepperMotorServer_CLI::*cmdFunction)(char *, char *))
+void ESPStepperMotorServer_CLI::registerNewCommand(commandDetailsStructure commandDetails, CmdHandler cmdFunction)
 {
   if (this->commandCounter < MAX_CLI_CMD_COUNTER)
   {
@@ -544,10 +545,10 @@ void ESPStepperMotorServer_CLI::cmdMoveBy(char *cmd, char *args)
       this->getParameterValue(args, "u", unit);
       if (unit[0] == NULLCHAR || strcmp(unit, "steps") == 0)
       {
-        if (unit[0] == NULLCHAR)
-        {
-          Serial.println("no unit provided, will use 'steps' as default");
-        }
+        //if (unit[0] == NULLCHAR)
+        //{
+        //  Serial.println("no unit provided, will use 'steps' as default");
+        //}
         int targetPosition = (String(value).toInt());
 #ifndef ESPStepperMotorServer_COMPILE_NO_DEBUG
         ESPStepperMotorServer_Logger::logDebugf("Setting target position to %i steps\n", targetPosition);
